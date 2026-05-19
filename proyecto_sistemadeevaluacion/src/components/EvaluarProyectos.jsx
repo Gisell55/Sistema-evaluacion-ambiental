@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import API_URL from '../config';
 
 /* ── Íconos ─────────────────────────────────────────── */
 const LeafIcon = () => (
@@ -117,7 +118,7 @@ function ListaProyectos({ tipoProyecto, onSeleccionar, onCrearNuevo }) {
       try {
         const token = localStorage.getItem('token');
         const res = await axios.get(
-          `/api/evaluar/pendientes/${encodeURIComponent(tipoProyecto)}`,
+          `${API_URL}/api/evaluar/pendientes/${encodeURIComponent(tipoProyecto)}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setProyectos(res.data.proyectos);
@@ -254,7 +255,7 @@ function FormularioEvaluacion({ proyectoId, tipoProyecto, onVolver, onGuardado }
     const cargar = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get(`/api/evaluar/detalle/${proyectoId}`,
+        const res = await axios.get(`${API_URL}/api/evaluar/detalle/${proyectoId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setProyecto(res.data.proyecto);

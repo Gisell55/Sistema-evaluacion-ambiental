@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import API_URL from '../config';
 
 const TIPOS_PROYECTO = [
   'Relleno Sanitario',
@@ -164,7 +165,7 @@ export default function NuevaEvaluacion() {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        '/api/evaluaciones/crear',
+        `${API_URL}/api/evaluaciones/crear`,
         { nombreProyecto, tipoProyecto },
         { headers: { Authorization: `Bearer ${token}` } }
       );

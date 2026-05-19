@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import API_URL from '../config';
 
 const PAISES = [
   "Afganistán","Albania","Alemania","Andorra","Angola","Antigua y Barbuda","Arabia Saudita",
@@ -171,7 +172,7 @@ export default function AuthPage() {
     setError('');
     setLoading(true);
     try {
-      const res = await axios.post('/api/auth/login', loginData);
+      const res = await axios.post(`${API_URL}/api/auth/login`, loginData);
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('usuario', JSON.stringify(res.data.usuario));
       navigate('/dashboard');
@@ -195,7 +196,7 @@ export default function AuthPage() {
     }
     setLoading(true);
     try {
-      await axios.post('/api/auth/register', regData);
+      await axios.post(`${API_URL}/api/auth/register`, regData);
       setSuccess('¡Cuenta creada exitosamente! Ahora puedes iniciar sesión.');
       setTab('login');
     } catch (err) {
@@ -450,7 +451,7 @@ export default function AuthPage() {
                 if (!loginData.email) { setError('Ingresa tu correo electrónico.'); return; }
                 setError(''); setLoading(true);
                 try {
-                  await axios.post('/api/recuperacion/solicitar', { email: loginData.email });
+                  await axios.post(`${API_URL}/api/recuperacion/solicitar`, { email: loginData.email });
                   setSuccess('✅ Solicitud enviada. El administrador te enviará tu nueva contraseña al correo.');
                   setTab('login');
                 } catch (err) {

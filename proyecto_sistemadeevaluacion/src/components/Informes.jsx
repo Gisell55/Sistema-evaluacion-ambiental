@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import API_URL from '../config';
 
 /* ── Colores criterios ── */
 const COLS = [
@@ -88,7 +89,7 @@ function ListaInformes({ tipoProyecto, onVerDetalle }) {
       try {
         const token = localStorage.getItem('token');
         const res = await axios.get(
-          `/api/informes/lista/${encodeURIComponent(tipoProyecto)}`,
+          `${API_URL}/api/informes/lista/${encodeURIComponent(tipoProyecto)}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setEvaluaciones(res.data.evaluaciones);
@@ -224,7 +225,7 @@ function DetalleInforme({ evaluacionId, onVolver }) {
     const cargar = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get(`/api/informes/detalle/${evaluacionId}`,
+        const res = await axios.get(`${API_URL}/api/informes/detalle/${evaluacionId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setEvaluacion(res.data.evaluacion);

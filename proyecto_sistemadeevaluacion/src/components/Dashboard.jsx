@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import API_URL from '../config';
 
 const MODULOS = [
   { id: 'relleno-sanitario', tipo: 'Relleno Sanitario', nombre: 'Relleno Sanitario', faIcon: 'fa-solid fa-mountain-city' },
@@ -37,7 +38,7 @@ export default function Dashboard() {
   const cargar = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('/api/dashboard/stats', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.get(`${API_URL}/api/dashboard/stats`, { headers: { Authorization: `Bearer ${token}` } });
       setStats(res.data.stats);
       setRanking(res.data.ranking || []);
     } catch (e) { console.error(e); }

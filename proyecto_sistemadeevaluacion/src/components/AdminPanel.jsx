@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import API_URL from '../config';
 
 export default function AdminPanel() {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ export default function AdminPanel() {
   const cargar = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('/api/recuperacion/solicitudes',
+      const res = await axios.get(`${API_URL}/api/recuperacion/solicitudes`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setSolicitudes(res.data.solicitudes);

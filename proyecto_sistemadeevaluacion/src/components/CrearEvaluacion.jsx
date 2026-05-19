@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import API_URL from '../config';
 import { CRITERIOS_RELLENO, PARAMS_RELLENO } from '../datos/datosRellenoSanitario';
 import { CRITERIOS_TRANSFERENCIA, PARAMS_TRANSFERENCIA } from '../datos/datosPlantaTransferencia';
 import { CRITERIOS_ORGANICOS, PARAMS_ORGANICOS } from '../datos/datosResiduosOrganicos';
@@ -410,7 +411,7 @@ datosTipo.params.map(paramList =>
     setLoading(true); setError('');
     try {
       const token = localStorage.getItem('token');
-      await axios.post('/api/crear-evaluacion/guardar', {
+      await axios.post(`${API_URL}/api/crear-evaluacion/guardar`, {
         tipoProyecto,
         nombreProyecto: info.nombre,
         descripcion: info.descripcion,
