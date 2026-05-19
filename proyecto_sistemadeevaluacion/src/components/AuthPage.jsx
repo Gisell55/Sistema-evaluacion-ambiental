@@ -230,8 +230,8 @@ export default function AuthPage() {
           </div>
 
           <div style={styles.tabContainer}>
-            <button style={styles.tab(tab === 'login')} onClick={() => switchTab('login')}>Iniciar Sesión</button>
-            <button style={styles.tab(tab === 'register')} onClick={() => switchTab('register')}>Registrarse</button>
+           <button style={styles.tab(tab === 'login')} onClick={() => switchTab('login')}>Iniciar Sesión</button>
+          <button style={styles.tab(tab === 'register')} onClick={() => switchTab('register')}>Registrarse</button>
           </div>
 
           {error && (
@@ -272,9 +272,17 @@ export default function AuthPage() {
                   </button>
                 </div>
               </div>
-              <button type="submit" className="submit" style={styles.submitBtn} disabled={loading}>
-                {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
-              </button>
+                 <button type="submit" className="submit" style={styles.submitBtn} disabled={loading}>
+                 {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+                </button>
+                  <button
+                     type="button"
+                     onClick={() => { setError(''); setTab('recuperar'); }}
+                     style={{ background: 'none', border: 'none', color: '#2d9a4e',
+                      fontSize: '13px', fontWeight: '600', cursor: 'pointer',
+                      marginTop: '12px', width: '100%', textAlign: 'center' }}>
+                       ¿Olvidaste tu contraseña?
+                  </button>
             </form>
           )}
 
@@ -415,6 +423,52 @@ export default function AuthPage() {
               </button>
             </form>
           )}
+          {/* ── RECUPERACIÓN ── */}
+        {tab === 'recuperar' && (
+          <div>
+            <p style={{ fontSize: '14px', color: '#5f6368', marginBottom: '20px', lineHeight: '1.6' }}>
+              Ingresa tu correo y el administrador recibirá tu solicitud para restablecer tu contraseña.
+            </p>
+            <div style={styles.fieldGroup}>
+              <label style={styles.label}>Correo electrónico</label>
+              <input
+                type="email"
+                placeholder="usuario@ejemplo.com"
+                value={loginData.email}
+                style={inputStyle('email', loginFocus)}
+                onFocus={() => setLoginFocus(f => ({ ...f, email: true }))}
+                onBlur={() => setLoginFocus(f => ({ ...f, email: false }))}
+                onChange={e => setLoginData(d => ({ ...d, email: e.target.value }))}
+              />
+            </div>
+            <button
+              type="button"
+              className="submit"
+              style={styles.submitBtn}
+              disabled={loading}
+              onClick={async () => {
+                if (!loginData.email) { setError('Ingresa tu correo electrónico.'); return; }
+                setError(''); setLoading(true);
+                try {
+                  await axios.post('/api/recuperacion/solicitar', { email: loginData.email });
+                  setSuccess('✅ Solicitud enviada. El administrador te enviará tu nueva contraseña al correo.');
+                  setTab('login');
+                } catch (err) {
+                  setError(err.response?.data?.message || 'Error al enviar la solicitud.');
+                } finally { setLoading(false); }
+              }}>
+              {loading ? 'Enviando...' : 'Enviar solicitud'}
+            </button>
+            <button
+              type="button"
+              onClick={() => { setTab('login'); setError(''); }}
+              style={{ background: 'none', border: 'none', color: '#5f6368',
+                fontSize: '13px', cursor: 'pointer', marginTop: '12px',
+                width: '100%', textAlign: 'center' }}>
+              ← Volver al inicio de sesión
+            </button>
+          </div>
+        )}
         </div>
       </div>
     </>

@@ -53,16 +53,16 @@ router.post('/login', async (req, res) => {
     const passwordCorrecta = await bcrypt.compare(password, usuario.password);
     if (!passwordCorrecta) return res.status(401).json({ message: 'Correo electrónico o contraseña incorrectos' });
 
-    const token = jwt.sign(
-      { id: usuario.id, email: usuario.email, rol: usuario.rol },
-      process.env.JWT_SECRET || 'secreto_temporal',
-      { expiresIn: '8h' }
-    );
+const token = jwt.sign(
+  { id: usuario.id, email: usuario.email, rol: usuario.rol, es_admin: usuario.es_admin },
+  process.env.JWT_SECRET || 'secreto_temporal',
+  { expiresIn: '8h' }
+);
 
     console.log(`✅ Login exitoso: ${email}`);
     res.json({
       message: 'Inicio de sesión exitoso', token,
-      usuario: { id: usuario.id, nombre: usuario.nombre, email: usuario.email, rol: usuario.rol, empresa: usuario.empresa }
+      usuario: { id: usuario.id, nombre: usuario.nombre, email: usuario.email, rol: usuario.rol, empresa: usuario.empresa, es_admin: usuario.es_admin }
     });
 
   } catch (error) {

@@ -8,6 +8,7 @@ const evaluacionesRoutes = require('./routes/evaluaciones');
 const crearEvaluacionRoutes = require('./routes/crear-evaluacion');
 const evaluarRoutes = require('./routes/evaluar');
 const informesRoutes = require('./routes/informes');
+const recuperacionRoutes = require('./routes/recuperacion');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -23,6 +24,7 @@ app.use('/api/evaluaciones', evaluacionesRoutes);
 app.use('/api/crear-evaluacion', crearEvaluacionRoutes);
 app.use('/api/evaluar', evaluarRoutes);
 app.use('/api/informes', informesRoutes);
+app.use('/api/recuperacion', recuperacionRoutes);
 
 app.use((req, res) => res.status(404).json({ message: 'Ruta no encontrada' }));
 

@@ -1,132 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
-
-/* ── Datos por defecto ─────────────────────────────────────────────── */
-const CRITERIOS_INIT = [
-  { nombre: 'Ordenamiento territorial',  pct: 18, bg: '#fef9c3', border: '#fde047', text: '#854d0e', btnColor: '#ca8a04' },
-  { nombre: 'Construcción y reparación', pct: 32, bg: '#dbeafe', border: '#93c5fd', text: '#1e3a8a', btnColor: '#2563eb' },
-  { nombre: 'Accesibilidad vial',         pct: 24, bg: '#fce7f3', border: '#f9a8d4', text: '#9d174d', btnColor: '#db2777' },
-  { nombre: 'Impacto ambiental',          pct: 16, bg: '#dcfce7', border: '#86efac', text: '#14532d', btnColor: '#16a34a' },
-  { nombre: 'Viabilidad económica',       pct: 10, bg: '#ffedd5', border: '#fdba74', text: '#9a3412', btnColor: '#ea580c' },
-];
-
-
-const PARAMS_DEFAULT = [
-  [
-    { nombre: 'Uso del suelo', subs: [
-      { nombre: 'Areas e inmuebles considerados patrimonio cultural', pct: 0 },
-      { nombre: 'Areas de conservación y protección ambiental', pct: 0 },
-      { nombre: 'Áreas de protección para la producción', pct: 12.5 },
-      { nombre: 'Otras áreas rurales', pct: 25 },
-      { nombre: 'Áreas del sistema de servicios públicos domiciliarios', pct: 75 },
-    ]},
-    { nombre: 'Restricciones en la disponibilidad del área', subs: [
-      { nombre: 'Existen más de dos restricciones', pct: 0 },
-      { nombre: 'Existen dos restricciones', pct: 12.5 },
-      { nombre: 'Existe una restricción', pct: 18.75 },
-      { nombre: 'No existen restricciones', pct: 25 },
-    ]},
-  ],
-  [
-    { nombre: 'Facilidad para el movimiento de tierras', subs: [
-      { nombre: 'Imposible', pct: 0 },
-      { nombre: 'Dificil', pct: 32 },
-      { nombre: 'Regular', pct: 6.3 },
-      { nombre: 'Muy fácil', pct: 12.5 },
-    ]},
-    { nombre: 'Pendiente promedio del terreno', subs: [
-      { nombre: 'Más de 8%', pct: 0 },
-      { nombre: 'Entre 6,1% y 8%', pct: 32 },
-      { nombre: 'Entre 4,1% y 6%', pct: 6.3 },
-      { nombre: 'Entre 2,1% y 4%', pct: 9.4 },
-      { nombre: 'Entre 0% y 2%', pct: 12.5 },
-    ]},
-      { nombre: 'Capacidad', subs: [
-      { nombre: 'Igual o menor a 0,5 veces la producción de residuos ', pct: 0 },
-      { nombre: 'Entre más de 0,5 veces y 1 vez la producción de residuos ', pct: 18.8 },
-      { nombre: 'Entre más de 1 vez y 1,5 veces la producción de residuos', pct: 25 },
-      { nombre: 'Entre más de 1,5 veces y 2 veces la producción de residuos', pct: 31.3 },
-      { nombre: 'Mayor a 2 veces la producción de residuos', pct: 37.5 },
-    ]},
-      { nombre: 'Disponibilidad de servicios públicos', subs: [
-      { nombre: 'No tiene el acceso a servicios públicos', pct: 0 },
-      { nombre: 'Tiene conexión a energía eléctrica o tiene su propio sistema de autoabastecimiento', pct: 18.8 },
-      { nombre: 'Tiene conexión a energía eléctrica o tiene su propio sistema de autoabastecimiento y 1 servicio público adicional sea acueducto, alcantarillado, o telecomunicaciones', pct: 25 },
-      { nombre: 'Tiene conexión a energía eléctrica o tiene su propio sistema de autoabastecimiento y 2 servicio públicos adicionales entre acueducto, alcantarillado, o telecomunicaciones', pct: 31.3 },
-      { nombre: 'Tiene conexión a energía eléctrica o tiene su propio sistema de autoabastecimiento y a acueducto, alcantarillado, o telecomunicaciones', pct: 37.5 },
-    ]},
-  ],
-  [
-    { nombre: 'Tipo de la via principal', subs: [
-      { nombre: 'Terciaria (vías de acceso que unen las cabeceras municipales con sus veredas o unen veredas entre sí) [30]', pct: 4.2 },
-      { nombre: 'Secundaria (vías que unen las cabeceras municipales entre sí y/o que provienen de una cabecera municipal y conectan con una carretera primaria) [30]', pct: 8.4 },
-      { nombre: 'Primaria (troncales, transversales y accesos a capitales de Departamento que cumplen la función básica de integración de las principales zonas de producción y consumo del país) [30]', pct: 16.67 },
-    ]},
-    { nombre: 'Condiciones de la vía principal', subs: [
-      { nombre: 'Sin paimentar', pct: 0 },
-      { nombre: 'Paimentada en mal estado', pct: 4.2 },
-      { nombre: 'Paimentada en regular estado', pct: 8.4 },
-      { nombre: 'Paimentada en buen estado', pct: 16.7 },
-    ]},
-      { nombre: 'Pendiente de la vía principal', subs: [
-      { nombre: 'Terreno escarpado (Tiene pendientes transversales al eje de la vía generalmente superiores a cuarenta grados (40°)) [30]', pct: 0 },
-      { nombre: 'Terreno montañoso (Tiene pendientes transversales al eje de la vía entre trece y cuarenta grados (13° - 40°) y sus pendientes longitudinales predominantes se encuentran entre seis y ocho por ciento (6% - 8%)) [30]', pct: 4.2 },
-      { nombre: 'Terreno ondulado (Tiene pendientes transversales al eje de la vía entre seis y trece grados (6° - 13°) y sus pendientes longitudinales predominantes se encuentran entre tres y seis por ciento (3% - 6%)) [30]', pct: 8.4 },
-      { nombre: 'Terreno plano (Tiene pendientes transversales al eje de la vía menores de cinco grados (5°) y sus pendientes longitudinales son normalmente menores de tres por ciento (3%)) [30]', pct: 16.7 },
-    ]},
-      { nombre: 'Condiciones de la vía de aproximación', subs: [
-      { nombre: 'Sin Pavimentar', pct: 0 },
-      { nombre: 'Pavimentada en mal estado', pct: 4.2 },
-      { nombre: 'Pavimentada en regular estado', pct: 8.4 },
-      { nombre: 'Pavimentada en buen estado', pct: 16.7 },
-    ]},
-       { nombre: 'Pendiente de la vía de aproximación', subs: [
-      { nombre: 'Terreno escarpado (Tiene pendientes transversales al eje de la vía generalmente superiores a cuarenta grados (40°)) [30]', pct: 0 },
-      { nombre: 'Terreno montañoso (Tiene pendientes transversales al eje de la vía entre trece y cuarenta grados (13° - 40°) y sus pendientes longitudinales predominantes se encuentran entre seis y ocho por ciento (6% - 8%)) [30]', pct: 4.2 },
-      { nombre: 'Terreno ondulado (Tiene pendientes transversales al eje de la vía entre seis y trece grados (6° - 13°) y sus pendientes longitudinales predominantes se encuentran entre tres y seis por ciento (3% - 6%)) [30]', pct: 8.4 },
-      { nombre: 'Terreno plano (Tiene pendientes transversales al eje de la vía menores de cinco grados (5°) y sus pendientes longitudinales son normalmente menores de tres por ciento (3%)) [30]', pct: 16.7 },
-    ]},
-        { nombre: 'Numeros de vías de aproximación', subs: [
-      { nombre: 'No hay vías', pct: 0 },
-      { nombre: '1 vía', pct: 4.2 },
-      { nombre: '2 vías', pct: 8.4 },
-      { nombre: '3 o más vías', pct: 16.7 },
-    ]},
-  ],
-  [
-    { nombre: 'Dirección de los vientos', subs: [
-      { nombre: 'Dirección en sentido del casco urbano más cercano', pct: 0 },
-      { nombre: 'Dirección en sentido contrario a la población más cercana', pct: 25 },
-    ]},
-    { nombre: 'Geoformas del área', subs: [
-      { nombre: 'Zona plana y abierta', pct: 6.3 },
-      { nombre: 'Zona en media ladera abierta', pct: 12.5 },
-      { nombre: 'zona en media ladera parcialmente encajonada', pct: 18.8 },
-      { nombre: 'Zona quebrada y encajonada', pct: 25 },
-    ]},
-        { nombre: 'Densidad poblacional en el área', subs: [
-      { nombre: 'Mayor de 5 habitantes/hectárea', pct: 0 },
-      { nombre: 'Entre 2,1 habitantes/hectárea a 5 habitantes/hectárea', pct: 12.5 },
-      { nombre: 'Entre 0 habitantes/hectárea a 2 habitantes/hectárea', pct: 25 },
-    ]},
-        { nombre: 'Incidencia en el tráfico en la vía principal', subs: [
-      { nombre: 'Alta', pct: 6.3 },
-      { nombre: 'Moderada', pct: 12.5 },
-      { nombre: 'Baja', pct: 18.8 },
-      { nombre: 'Ninguna', pct: 25 },
-    ]},
-  ],
-  [
-    { nombre: 'Distancia entre la estación el municipio y la PSTRSI ', subs: [
-      { nombre: 'Más de 10 kilometros', pct: 0 },
-      { nombre: 'Entre 6,1 a 8 kilometros', pct: 50 },
-      { nombre: 'Entre 4,1 a 6 kilometros', pct: 66.9 },
-      { nombre: 'Entre 2,1 a 4 kilometros', pct: 83.4 },
-      { nombre: 'Menor a 2 kilometros', pct: 100 },
-    ]},
-  ],
-];
+import { CRITERIOS_RELLENO, PARAMS_RELLENO } from '../datos/datosRellenoSanitario';
+import { CRITERIOS_TRANSFERENCIA, PARAMS_TRANSFERENCIA } from '../datos/datosPlantaTransferencia';
+import { CRITERIOS_ORGANICOS, PARAMS_ORGANICOS } from '../datos/datosResiduosOrganicos';
+import { CRITERIOS_INORGANICOS, PARAMS_INORGANICOS } from '../datos/datosResiduosInorganicos';
 
 /* ── Helpers ───────────────────────────────────────────────────────── */
 const calcPts = (base, pct) => Math.round(base * parseFloat(pct || 0) / 100);
@@ -349,9 +227,10 @@ const s = {
     textTransform: 'uppercase', letterSpacing: '0.05em',
   },
   subTd: { padding: '8px 14px', borderBottom: '1px solid #f1f3f4', verticalAlign: 'middle' },
-  subNameInput: {
+subNameInput: {
     width: '100%', border: 'none', background: 'transparent',
     fontSize: '13px', color: '#202124', outline: 'none',
+    whiteSpace: 'normal', wordBreak: 'break-word', lineHeight: '1.5',
   },
   subPctInput: {
     width: '100px', padding: '5px 8px', borderRadius: '6px',
@@ -402,6 +281,16 @@ export default function CrearEvaluacion() {
   const navigate = useNavigate();
   const location = useLocation();
   const tipoProyecto = location.state?.tipoProyecto || 'Relleno Sanitario';
+  const getDatosPorTipo = (tipo) => {
+  if (tipo === 'Planta de transferencia')
+    return { criterios: CRITERIOS_TRANSFERENCIA, params: PARAMS_TRANSFERENCIA };
+  if (tipo === 'Planta de tratamiento de residuos orgánicos putrescibles')
+    return { criterios: CRITERIOS_ORGANICOS, params: PARAMS_ORGANICOS };
+  if (tipo === 'Plantas de selección y transformación de residuos sólidos inorgánicos')
+    return { criterios: CRITERIOS_INORGANICOS, params: PARAMS_INORGANICOS };
+  return { criterios: CRITERIOS_RELLENO, params: PARAMS_RELLENO };
+};
+const datosTipo = getDatosPorTipo(tipoProyecto);
   const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
 
   const [paso, setPaso] = useState(1);
@@ -417,12 +306,12 @@ export default function CrearEvaluacion() {
 
   /* Step 2 - criterios */
   const [criterios, setCriterios] = useState(
-    CRITERIOS_INIT.map(c => ({ ...c, puntos: calcPts(1000, c.pct) }))
+  datosTipo.criterios.map(c => ({ ...c, puntos: calcPts(1000, c.pct) }))
   );
 
   /* Step 3 - parametros */
   const [paramsData, setParamsData] = useState(
-    PARAMS_DEFAULT.map(paramList =>
+datosTipo.params.map(paramList =>
       paramList.map(p => ({
         nombre: p.nombre,
         subs: p.subs.map(s => ({ nombre: s.nombre, pct: s.pct })),
@@ -787,8 +676,14 @@ export default function CrearEvaluacion() {
                               return (
                                 <tr key={si}>
                                   <td style={s.subTd}>
-                                    <input style={s.subNameInput} value={sub.nombre}
-                                      onChange={e => updateSubNombre(ci, pi, si, e.target.value)} />
+                                     <div
+                                       style={s.subNameInput}
+                                       contentEditable
+                                       suppressContentEditableWarning
+                                       onBlur={e => updateSubNombre(ci, pi, si, e.currentTarget.textContent)}
+                                     >
+                                        {sub.nombre}
+                                     </div>
                                   </td>
                                   <td style={{ ...s.subTd, textAlign: 'center' }}>
                                     <input

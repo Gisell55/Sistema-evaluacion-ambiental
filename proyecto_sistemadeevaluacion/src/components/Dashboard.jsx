@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const MODULOS = [
   { id: 'relleno-sanitario', tipo: 'Relleno Sanitario', nombre: 'Relleno Sanitario', faIcon: 'fa-solid fa-mountain-city' },
-  { id: 'planta-transferencia', tipo: 'Planta de transferencia', nombre: 'Planta de transferencia', faIcon: 'fa-solid fa-industry' },
+  { id: 'planta-transferencia-de-residuos-ordinarios', tipo: 'Planta de transferencia de residuos ordinarios', nombre: 'Planta de transferencia de residuos ordinarios', faIcon: 'fa-solid fa-industry' },
   { id: 'residuos-organicos', tipo: 'Planta de tratamiento de residuos orgánicos putrescibles', nombre: 'Planta de tratamiento de residuos orgánicos putrescibles', faIcon: 'fa-solid fa-dumpster' },
   { id: 'residuos-inorganicos', tipo: 'Plantas de selección y transformación de residuos sólidos inorgánicos', nombre: 'Plantas de selección y transformación de residuos sólidos inorgánicos', faIcon: 'fa-solid fa-person-digging' },
 ];
@@ -84,6 +84,14 @@ export default function Dashboard() {
             <div className="r-user-name">{usuario.nombre || 'Usuario'}</div>
             <div className="r-user-role">{usuario.rol || 'Sin rol'}</div>
           </div>
+          {usuario.es_admin === 1 && (
+         <button onClick={() => navigate('/admin')}
+            style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 14px',
+             borderRadius:8, border:'1px solid #fdba74', background:'#fff7ed',
+             fontSize:13, fontWeight:600, color:'#e07b00', cursor:'pointer' }}>
+           🛡️ Admin
+            </button>
+           )}
           <button className="btn-salir" onClick={salir} style={{
             display:'flex',alignItems:'center',gap:6,padding:'8px 14px',
             borderRadius:8,border:'1px solid #e8eaed',background:'#fff',

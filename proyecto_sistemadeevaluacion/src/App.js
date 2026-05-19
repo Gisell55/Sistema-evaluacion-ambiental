@@ -7,6 +7,7 @@ import CrearEvaluacion from './components/CrearEvaluacion';
 import EvaluarProyectos from './components/EvaluarProyectos';
 import Informes from './components/Informes';
 import NuevaEvaluacion from './components/NuevaEvaluacion';
+import AdminPanel from './components/AdminPanel';
 
 function RutaProtegida({ children }) {
   const token = localStorage.getItem('token');
@@ -25,6 +26,7 @@ function App() {
         <Route path="/evaluar-proyectos" element={<RutaProtegida><EvaluarProyectos /></RutaProtegida>} />
         <Route path="/informes" element={<RutaProtegida><Informes /></RutaProtegida>} />
         <Route path="/nueva-evaluacion" element={<RutaProtegida><NuevaEvaluacion /></RutaProtegida>} />
+        <Route path="/admin" element={<RutaProtegida><AdminPanel /></RutaProtegida>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
