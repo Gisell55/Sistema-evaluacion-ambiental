@@ -366,11 +366,14 @@ datosTipo.params.map(paramList =>
     )
   ));
 
-  const updateSubPct = (ci, pi, si, val) => setParamsData(prev => prev.map((params, i) =>
+const updateSubPct = (ci, pi, si, val) => {
+  const numVal = parseFloat(val) || 0;
+  setParamsData(prev => prev.map((params, i) =>
     i !== ci ? params : params.map((p, j) =>
-      j !== pi ? p : { ...p, subs: p.subs.map((s, k) => k !== si ? s : { ...s, pct: val }) }
+      j !== pi ? p : { ...p, subs: p.subs.map((s, k) => k !== si ? s : { ...s, pct: numVal }) }
     )
   ));
+};
 
   const updateParamNombre = (ci, pi, val) => setParamsData(prev => prev.map((params, i) =>
     i !== ci ? params : params.map((p, j) => j !== pi ? p : { ...p, nombre: val })
