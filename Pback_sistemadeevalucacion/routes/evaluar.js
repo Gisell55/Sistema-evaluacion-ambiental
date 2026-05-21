@@ -71,7 +71,7 @@ router.post('/guardar', verificarToken, async (req, res) => {
   try {
     await conn.beginTransaction();
     const { proyectoId, respuestas, puntajeTotal, puntajeMaximo } = req.body;
-
+  console.log('Guardando evaluacion:', { proyectoId, puntajeTotal, puntajeMaximo, respuestas: respuestas?.length });
     const [ev] = await conn.query(
       `INSERT INTO evaluaciones_realizadas (proyecto_id, usuario_id, puntaje_total, puntaje_maximo)
        VALUES (?, ?, ?, ?)`,

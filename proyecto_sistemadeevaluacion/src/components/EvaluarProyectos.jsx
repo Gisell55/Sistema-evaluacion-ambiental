@@ -301,8 +301,8 @@ function FormularioEvaluacion({ proyectoId, tipoProyecto, onVolver, onGuardado }
         subparametroId: sel.subId,
         puntos: sel.puntos,
       }));
-      await axios.post('/api/evaluar/guardar',
-        { proyectoId, respuestas, puntajeTotal, puntajeMaximo: proyecto.base_calculo },
+      await axios.post(`${API_URL}/api/evaluar/guardar`,
+      { proyectoId: parseInt(proyectoId), respuestas, puntajeTotal, puntajeMaximo: parseInt(proyecto.base_calculo) },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       onGuardado({ proyecto, puntajeTotal, desglose });
