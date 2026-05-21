@@ -27,7 +27,7 @@ export default function AdminPanel() {
     if (!window.confirm(`¿Resetear la contraseña de ${nombre}?`)) return;
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.post(`/api/recuperacion/resetear/${id}`, {},
+      const res = await axios.post(`${API_URL}/api/recuperacion/resetear/${id}`, {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setMsg(res.data.message);
