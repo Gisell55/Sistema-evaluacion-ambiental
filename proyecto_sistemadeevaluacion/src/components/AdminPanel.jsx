@@ -6,8 +6,10 @@ import API_URL from '../config';
 export default function AdminPanel() {
   const navigate = useNavigate();
   const [solicitudes, setSolicitudes] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState('');
+  const [tab, setTab] = useState('solicitudes');
   const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
 
   useEffect(() => { cargar(); }, []);
@@ -15,10 +17,14 @@ export default function AdminPanel() {
   const cargar = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`${API_URL}/api/recuperacion/solicitudes`,
+      const resSolicitudes = await axios.get(`${API_URL}/api/recuperacion/solicitudes`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setSolicitudes(res.data.solicitudes);
+      const resUsuarios = await axios.get(`${API_URL}/api/recuperacion/usuarios`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setSolicitudes(resSolicitudes.data.solicitudes);
+      setUsuarios(resUsuarios.data.usuarios);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   };
@@ -62,13 +68,32 @@ export default function AdminPanel() {
         </div>
       </header>
 
-      <main style={{ padding: '32px', maxWidth: '900px', margin: '0 auto' }}>
-        <h2 style={{ fontSize: '22px', fontWeight: '800', color: '#202124', marginBottom: '6px' }}>
-          Solicitudes de Recuperación de Contraseña
-        </h2>
-        <p style={{ fontSize: '14px', color: '#5f6368', marginBottom: '24px' }}>
-          Gestiona las solicitudes de usuarios que olvidaron su contraseña
-        </p>
+      <main style={{ padding: '32px', maxWidth: '1200px', margin: '0 auto' }}>
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', borderBottom: '2px solid #e8eaed' }}>
+          <button onClick={() => setTab('solicitudes')}
+            style={{ padding: '12px 20px', fontSize: '14px', fontWeight: '600',
+              color: tab === 'solicitudes' ? '#2d9a4e' : '#5f6368',
+              background: 'none', border: 'none', borderBottom: tab === 'solicitudes' ? '3px solid #2d9a4e' : 'none',
+              cursor: 'pointer', marginBottom: '-2px' }}>
+            Solicitudes de Recuperación
+          </button>
+          <button onClick={() => setTab('usuarios')}
+            style={{ padding: '12px 20px', fontSize: '14px', fontWeight: '600',
+              color: tab === 'usuarios' ? '#2d9a4e' : '#5f6368',
+              background: 'none', border: 'none', borderBottom: tab === 'usuarios' ? '3px solid #2d9a4e' : 'none',
+              cursor: 'pointer', marginBottom: '-2px' }}>
+            Historial de Usuarios
+          </button>
+        </div>
+
+        {tab === 'solicitudes' && (
+          <div>
+            <h2 style={{ fontSize: '22px', fontWeight: '800', color: '#202124', marginBottom: '6px' }}>
+              Solicitudes de Recuperación de Contraseña
+            </h2>
+            <p style={{ fontSize: '14px', color: '#5f6368', marginBottom: '24px' }}>
+              Gestiona las solicitudes de usuarios que olvidaron su contraseña
+            </p>
 
         {msg && (
           <div style={{ background: '#f0faf3', border: '1px solid #a8d5b5', borderRadius: '10px',
@@ -144,7 +169,98 @@ export default function AdminPanel() {
               </span>
             </div>
           ))}
-        </div>
+            </div>
+          </div>
+        )}
+
+        {tab === 'usuarios' && (
+          <div>
+            <h2 style={{ fontSize: '22px', fontWeight: '800', color: '#202124', marginBottom: '6px' }}>
+              Historial de Usuarios Registrados
+            </h2>
+            <p style={{ fontSize: '14px', color: '#5f6368', marginBottom: '24px' }}>
+              Visualiza todos los usuarios que se han registrado en la plataforma
+            </p>
+
+            {loading ? (
+              <div style={{ textAlign: 'center', padding: '40px', color: '#9aa0a6' }}>Cargando usuarios...</div>
+            ) : usuarios.length === 0 ? (
+              <div style={{ background: '#fff', borderRadius: '14px', border: '1px solid #e8eaed',
+                padding: '60px', textAlign: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+                <div style={{ fontSize: '16px', fontWeight: '600', color: '#9aa0a6' }}>
+                  No hay usuarios registrados aún
+                </div>
+              </div>
+            ) : (
+              <div style={{ background: '#fff', borderRadius: '14px', border: '1px solid #e8eaed',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.06)', overflow: 'hidden' }}>
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr style={{ background: '#f8f9fa', borderBottom: '2px solid #e8eaed' }}>
+                        <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: '13px', fontWeight: '700',
+                          color: '#5f6368', textTransform: 'uppercase' }}>Nombre</th>
+                        <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: '13px', fontWeight: '700',
+                          color: '#5f6368', textTransform: 'uppercase' }}>Email</th>
+                        <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: '13px', fontWeight: '700',
+                          color: '#5f6368', textTransform: 'uppercase' }}>Nacionalidad</th>
+                        <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: '13px', fontWeight: '700',
+                          color: '#5f6368', textTransform: 'uppercase' }}>Ciudad</th>
+                        <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: '13px', fontWeight: '700',
+                          color: '#5f6368', textTransform: 'uppercase' }}>Rol</th>
+                        <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: '13px', fontWeight: '700',
+                          color: '#5f6368', textTransform: 'uppercase' }}>Empresa</th>
+                        <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: '13px', fontWeight: '700',
+                          color: '#5f6368', textTransform: 'uppercase' }}>Tipo Empresa</th>
+                        <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: '13px', fontWeight: '700',
+                          color: '#5f6368', textTransform: 'uppercase' }}>Fecha Registro</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {usuarios.map((u, idx) => (
+                        <tr key={u.id} style={{ borderBottom: idx < usuarios.length - 1 ? '1px solid #f1f3f4' : 'none',
+                          background: idx % 2 === 0 ? '#fff' : '#fafafa' }}>
+                          <td style={{ padding: '12px 16px', fontSize: '14px', color: '#202124', fontWeight: '500' }}>
+                            {u.nombre}
+                          </td>
+                          <td style={{ padding: '12px 16px', fontSize: '13px', color: '#5f6368' }}>
+                            {u.email}
+                          </td>
+                          <td style={{ padding: '12px 16px', fontSize: '13px', color: '#5f6368' }}>
+                            {u.nacionalidad || '—'}
+                          </td>
+                          <td style={{ padding: '12px 16px', fontSize: '13px', color: '#5f6368' }}>
+                            {u.ciudad || '—'}
+                          </td>
+                          <td style={{ padding: '12px 16px', fontSize: '13px', fontWeight: '600' }}>
+                            <span style={{ background: u.rol === 'evaluador' ? '#dcfce7' : '#dbeafe',
+                              color: u.rol === 'evaluador' ? '#14532d' : '#1e3a8a',
+                              borderRadius: '20px', padding: '3px 10px', display: 'inline-block' }}>
+                              {u.rol}
+                            </span>
+                          </td>
+                          <td style={{ padding: '12px 16px', fontSize: '13px', color: '#5f6368' }}>
+                            {u.empresa || '—'}
+                          </td>
+                          <td style={{ padding: '12px 16px', fontSize: '13px', color: '#5f6368' }}>
+                            {u.tipo_empresa || '—'}
+                          </td>
+                          <td style={{ padding: '12px 16px', fontSize: '12px', color: '#9aa0a6' }}>
+                            {fmt(u.fecha_registro)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div style={{ padding: '16px 24px', background: '#f8f9fa', borderTop: '1px solid #e8eaed',
+                  fontSize: '13px', fontWeight: '600', color: '#5f6368' }}>
+                  Total: {usuarios.length} usuario{usuarios.length !== 1 ? 's' : ''}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </main>
     </div>
   );

@@ -62,6 +62,22 @@ router.get('/solicitudes', verificarToken, verificarAdmin, async (req, res) => {
   }
 });
 
+/* GET /api/recuperacion/usuarios */
+router.get('/usuarios', verificarToken, verificarAdmin, async (req, res) => {
+  try {
+    const [usuarios] = await db.query(
+      `SELECT id, nombre, email, nacionalidad, ciudad, rol, empresa, tipo_empresa, fecha_registro
+       FROM usuarios
+       WHERE es_admin = 0 OR es_admin IS NULL
+       ORDER BY fecha_registro DESC`
+    );
+    res.json({ usuarios });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error al obtener usuarios.' });
+  }
+});
+
 /* POST /api/recuperacion/resetear/:id */
 router.post('/resetear/:id', verificarToken, verificarAdmin, async (req, res) => {
   try {
