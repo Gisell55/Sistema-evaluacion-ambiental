@@ -189,7 +189,7 @@ const handleAcceder = (opcion) => {
         <div style={s.headerLeft}>
           <div style={s.logoCircle}><LeafIcon /></div>
           <div>
-            <div style={s.headerTitle} className="resp-header-title">Sistema de Evaluación Ambiental</div>
+            <div style={s.headerTitle} className="resp-header-title">Sistema de Evaluación Ambiental - UNIMETA</div>
             <div style={s.headerSubtitle} className="resp-header-subtitle">Gestión de proyectos sostenibles</div>
           </div>
         </div>

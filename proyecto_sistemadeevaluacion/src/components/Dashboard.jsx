@@ -76,7 +76,7 @@ export default function Dashboard() {
             <LeafIcon />
           </div>
           <div>
-            <div className="r-header-title">Sistema de Evaluación Ambiental</div>
+            <div className="r-header-title">Sistema de Evaluación Ambiental - UNIMETA</div>
             <div className="r-header-sub">Gestión de proyectos sostenibles</div>
           </div>
         </div>

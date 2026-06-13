@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import API_URL from '../config';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 /* ── Colores criterios ── */
 const COLS = [
@@ -50,6 +52,11 @@ const IconEmpty = () => (
   <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
     <polyline points="9 12 11 14 15 10"/>
+  </svg>
+);
+const IconPDF = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="13" x2="12" y2="17"/><line x1="9" y1="15" x2="15" y2="15"/>
   </svg>
 );
 
@@ -220,6 +227,8 @@ function ListaInformes({ tipoProyecto, onVerDetalle }) {
 function DetalleInforme({ evaluacionId, onVolver }) {
   const [evaluacion, setEvaluacion] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [generandoPDF, setGenerandoPDF] = useState(false);
+  const pdfContentRef = useRef(null);
 
   useEffect(() => {
     const cargar = async () => {
@@ -235,6 +244,51 @@ function DetalleInforme({ evaluacionId, onVolver }) {
     cargar();
   }, [evaluacionId]);
 
+  const generarPDF = async () => {
+    if (!evaluacion || !pdfContentRef.current) return;
+
+    setGenerandoPDF(true);
+    try {
+      const canvas = await html2canvas(pdfContentRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff'
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = pageWidth - 20;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      let heightLeft = imgHeight;
+      let position = 10;
+
+      pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight - 20;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight - 20;
+      }
+
+      pdf.save(`Informe-${evaluacion.nombre_proyecto}-${new Date().getTime()}.pdf`);
+    } catch (err) {
+      console.error('Error generando PDF:', err);
+    } finally {
+      setGenerandoPDF(false);
+    }
+  };
+
   if (loading) return <div style={{ textAlign: 'center', padding: '60px', color: '#9aa0a6' }}>Cargando informe...</div>;
   if (!evaluacion) return <div style={{ textAlign: 'center', padding: '60px', color: '#d93025' }}>Informe no encontrado</div>;
 
@@ -244,12 +298,34 @@ function DetalleInforme({ evaluacionId, onVolver }) {
 
   return (
     <div>
-      {/* Botón volver */}
-      <button onClick={onVolver}
-        style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none',
-          cursor: 'pointer', fontSize: '14px', fontWeight: '600', color: '#202124', marginBottom: '20px', padding: '0' }}>
-        <IconBack /> Volver a la lista de informes
-      </button>
+      {/* Botones volver y descargar PDF */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', gap: '12px', flexWrap: 'wrap' }}>
+        <button onClick={onVolver}
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none',
+            cursor: 'pointer', fontSize: '14px', fontWeight: '600', color: '#202124', padding: '0' }}>
+          <IconBack /> Volver a la lista de informes
+        </button>
+        <button onClick={generarPDF} disabled={generandoPDF}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '9px 16px',
+            borderRadius: '9px', background: '#dcfce7', border: '1.5px solid #86efac',
+            color: '#14532d', fontWeight: '700', fontSize: '13px', cursor: generandoPDF ? 'not-allowed' : 'pointer',
+            opacity: generandoPDF ? 0.6 : 1, whiteSpace: 'nowrap' }}>
+          <IconPDF /> {generandoPDF ? 'Generando...' : 'Descargar PDF'}
+        </button>
+      </div>
+
+      {/* Contenido del PDF */}
+      <div ref={pdfContentRef} style={{ background: '#fff' }}>
+
+      {/* Encabezado del PDF */}
+      <div style={{ textAlign: 'center', paddingBottom: '20px', marginBottom: '20px', borderBottom: '2px solid #e8eaed' }}>
+        <div style={{ fontSize: '18px', fontWeight: '800', color: '#202124', marginBottom: '4px' }}>
+          Sistema de Evaluación Ambiental - UNIMETA
+        </div>
+        <div style={{ fontSize: '12px', color: '#5f6368' }}>
+          Informe de Evaluación de Proyecto
+        </div>
+      </div>
 
       {/* Banner resultado */}
       <div style={{ background: 'linear-gradient(135deg,#2d9a4e,#1e7a3a)', borderRadius: '16px',
@@ -421,6 +497,7 @@ function DetalleInforme({ evaluacionId, onVolver }) {
           </div>
         );
       })}
+      </div>
     </div>
   );
 }
@@ -445,7 +522,7 @@ export default function Informes() {
           <div style={s.logoCircle}><LeafIcon /></div>
           <div>
             <div style={{ fontSize: '16px', fontWeight: '700', color: '#202124' }} className="resp-header-title">
-              Sistema de Evaluación Ambiental
+              Sistema de Evaluación Ambiental - UNIMETA
             </div>
             <div style={{ fontSize: '11px', color: '#5f6368', marginTop: '1px' }} className="resp-header-subtitle">
               Gestión de proyectos sostenibles

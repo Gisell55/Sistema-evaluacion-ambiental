@@ -226,7 +226,7 @@ export default function AuthPage() {
         <div style={styles.card} className="resp-login-card">
           <div style={styles.header}>
             <div style={styles.logoCircle}><LeafIcon /></div>
-            <h1 style={styles.title}>Sistema de Evaluación Ambiental</h1>
+            <h1 style={styles.title}>Sistema de Evaluación Ambiental - UNIMETA</h1>
             <p style={styles.subtitle}>Plataforma para evaluación de proyectos de sostenibilidad</p>
           </div>
 
