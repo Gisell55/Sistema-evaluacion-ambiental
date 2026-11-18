@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import API_URL from '../config';
-import { CRITERIOS_RELLENO, PARAMS_RELLENO } from '../datos/datosRellenoSanitario';
+import { obtenerDatos } from '../datos';
+/*import { CRITERIOS_RELLENO, PARAMS_RELLENO } from '../datos/datosRellenoSanitario';
 import { CRITERIOS_TRANSFERENCIA, PARAMS_TRANSFERENCIA } from '../datos/datosPlantaTransferencia';
 import { CRITERIOS_ORGANICOS, PARAMS_ORGANICOS } from '../datos/datosResiduosOrganicos';
-import { CRITERIOS_INORGANICOS, PARAMS_INORGANICOS } from '../datos/datosResiduosInorganicos';
+import { CRITERIOS_INORGANICOS, PARAMS_INORGANICOS } from '../datos/datosResiduosInorganicos';*/
 
 /* ── Helpers ───────────────────────────────────────────────────────── */
 const calcPts = (base, pct) => Math.round(base * parseFloat(pct || 0) / 100);
@@ -281,8 +282,8 @@ subNameInput: {
 export default function CrearEvaluacion() {
   const navigate = useNavigate();
   const location = useLocation();
-  const tipoProyecto = location.state?.tipoProyecto || 'Relleno Sanitario';
-  const getDatosPorTipo = (tipo) => {
+  //const tipoProyecto = location.state?.tipoProyecto || 'Relleno Sanitario';
+ /* const getDatosPorTipo = (tipo) => {
   if (tipo === 'Planta de transferencia')
     return { criterios: CRITERIOS_TRANSFERENCIA, params: PARAMS_TRANSFERENCIA };
   if (tipo === 'Planta de tratamiento de residuos orgánicos putrescibles')
@@ -290,8 +291,9 @@ export default function CrearEvaluacion() {
   if (tipo === 'Plantas de selección y transformación de residuos sólidos inorgánicos')
     return { criterios: CRITERIOS_INORGANICOS, params: PARAMS_INORGANICOS };
   return { criterios: CRITERIOS_RELLENO, params: PARAMS_RELLENO };
-};
-const datosTipo = getDatosPorTipo(tipoProyecto);
+};*/
+
+//const datosTipo = getDatosPorTipo(tipoProyecto);
   const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
 
   const [paso, setPaso] = useState(1);
@@ -306,19 +308,34 @@ const datosTipo = getDatosPorTipo(tipoProyecto);
   });
 
   /* Step 2 - criterios */
-  const [criterios, setCriterios] = useState(
-  datosTipo.criterios.map(c => ({ ...c, puntos: calcPts(1000, c.pct) }))
-  );
+const [tipoProyecto, setTipoProyecto] = useState(location.state?.tipoProyecto || 'Relleno Sanitario');
 
-  /* Step 3 - parametros */
-  const [paramsData, setParamsData] = useState(
-datosTipo.params.map(paramList =>
-      paramList.map(p => ({
-        nombre: p.nombre,
-        subs: p.subs.map(s => ({ nombre: s.nombre, pct: s.pct })),
-      }))
-    )
-  );
+useEffect(() => {
+  console.log('location.state:', location.state);
+  console.log('tipoProyecto actual:', location.state?.tipoProyecto);
+  
+  if (location.state?.tipoProyecto) {
+    setTipoProyecto(location.state.tipoProyecto);
+  } else {
+    setTipoProyecto('Relleno Sanitario');
+  }
+}, [location.state?.tipoProyecto]);
+ const { criterios: datosInicial, params: paramsInicial } = obtenerDatos(tipoProyecto);
+
+const [criterios, setCriterios] = useState(
+  datosInicial.map(c => ({ ...c, puntos: calcPts(1000, c.pct) }))
+);
+
+const [paramsData, setParamsData] = useState(
+  paramsInicial.map(paramList =>
+    paramList.map(p => ({
+      nombre: p.nombre,
+      subs: p.subs.map(s => ({ nombre: s.nombre, pct: s.pct })),
+    }))
+  )
+);
+
+
 
   /* ── Derived ── */
   const totalPct = criterios.reduce((s, c) => s + parseFloat(c.pct || 0), 0);

@@ -18,16 +18,18 @@ export const PARAMS_TRANSFERENCIA = [
   // ── Criterio 1: Ordenamiento territorial (160 pts) ──────────────────
   [
     { nombre: 'Uso del suelo', subs: [
-      { nombre: 'Áreas e inmuebles considerados patrimonio cultural.',           pct: 0     },
-      { nombre: 'Áreas de protección para la producción',                        pct: 31.25 }, // 50/160
-      { nombre: 'Otras áreas rurales',                                            pct: 62.5  }, // 100/160
-      { nombre: 'Áreas del sistema de servicios públicos domiciliarios',          pct: 125   }, // 200/160
+      { nombre: 'Áreas e inmuebles considerados patrimonio cultural',           pct: 0 },
+      { nombre: 'Áreas de conservación y protección ambiental',                 pct: 0 },
+      { nombre: 'Áreas de protección para la producción',                       pct: 50 }, // 50/160
+      { nombre: 'Otras áreas rurales',                                          pct: 100  }, // 100/160
+      { nombre: 'Áreas del sistema de servicios públicos domiciliarios',        pct: 200   }, // 200/160
     ]},
+
     { nombre: 'Restricciones en la disponibilidad del área', subs: [
       { nombre: 'Existen más de dos restricciones',  pct: 0     },
-      { nombre: 'Existen dos restricciones',          pct: 12.5  }, // 20/160
-      { nombre: 'Existe una restricción',              pct: 18.75 }, // 30/160
-      { nombre: 'No existen restricciones',            pct: 25    }, // 40/160
+      { nombre: 'Existen dos restricciones',          pct: 0 }, // 20/160
+      { nombre: 'Existe una restricción',              pct: 0 }, // 30/160
+      { nombre: 'No existen restricciones',            pct: 0   }, // 40/160
     ]},
   ],
 
@@ -35,24 +37,24 @@ export const PARAMS_TRANSFERENCIA = [
   [
     { nombre: 'Facilidad para el movimiento de tierras', subs: [
       { nombre: 'Imposible',   pct: 0      },
-      { nombre: 'Difícil',     pct: 3.125  }, // 10/320
-      { nombre: 'Regular',     pct: 6.25   }, // 20/320
-      { nombre: 'Fácil',       pct: 9.375  }, // 30/320
-      { nombre: 'Muy Fácil',   pct: 12.5   }, // 40/320
+      { nombre: 'Difícil',     pct: 0.03125  }, // 10/320
+      { nombre: 'Regular',     pct: 0.0625   }, // 20/320
+      { nombre: 'Fácil',       pct: 0.09375  }, // 30/320
+      { nombre: 'Muy Fácil',   pct: 0.125   }, // 40/320
     ]},
     { nombre: 'Pendiente promedio', subs: [
       { nombre: 'Más del 8%',            pct: 0      },
-      { nombre: 'Entre el 6,1% y el 8%', pct: 3.125  }, // 10/320
-      { nombre: 'Entre el 4,1% y 6%',    pct: 6.25   }, // 20/320
-      { nombre: 'Entre 2,1% y 4%',       pct: 9.375  }, // 30/320
-      { nombre: 'Entre 0% y 2%',          pct: 12.5   }, // 40/320
+      { nombre: 'Entre el 6,1% y el 8%', pct: 0.03125  }, // 10/320
+      { nombre: 'Entre el 4,1% y 6%',    pct: 0.0625   }, // 20/320
+      { nombre: 'Entre 2,1% y 4%',       pct: 0.09375  }, // 30/320
+      { nombre: 'Entre 0% y 2%',          pct: 0.125   }, // 40/320
     ]},
     { nombre: 'Capacidad', subs: [
       { nombre: 'Igual o menor a 0,5 veces la producción de residuos',                   pct: 0      },
-      { nombre: 'Entre más de 0,5 veces y 1 vez la producción de residuos',              pct: 15.625 }, // 50/320
-      { nombre: 'Entre más de 1 vez y 1,5 veces la producción de residuos',             pct: 31.25  }, // 100/320
-      { nombre: 'Entre más de 1,5 veces y 2 veces la producción de residuos',           pct: 46.875 }, // 150/320
-      { nombre: 'Mayor a 2 veces la producción de residuos',                             pct: 62.5   }, // 200/320
+      { nombre: 'Entre más de 0,5 veces y 1 vez la producción de residuos',              pct: 0 }, // 50/320
+      { nombre: 'Entre más de 1 vez y 1,5 veces la producción de residuos',             pct: 0  }, // 100/320
+      { nombre: 'Entre más de 1,5 veces y 2 veces la producción de residuos',           pct: 0 }, // 150/320
+      { nombre: 'Mayor a 2 veces la producción de residuos',                             pct: 0 }, // 200/320
     ]},
     { nombre: 'Disponibilidad de servicios públicos', subs: [
       { nombre: 'No tiene acceso a servicios públicos',                                                                                                                                          pct: 0     },

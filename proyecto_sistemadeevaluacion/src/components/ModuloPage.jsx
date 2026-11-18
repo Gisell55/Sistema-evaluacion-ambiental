@@ -161,22 +161,30 @@ const OPCIONES = [
 export default function ModuloPage() {
   const navigate = useNavigate();
   const location = useLocation();
+
   const tipoProyecto = location.state?.tipoProyecto || 'Módulo';
   const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
 
   const handleSalir = () => {
     localStorage.removeItem('token'); localStorage.removeItem('usuario'); navigate('/');
   };
-
 const handleAcceder = (opcion) => {
-    if (opcion.key === 'crear') {
-      navigate('/crear-evaluacion', { state: { tipoProyecto } });
-    } else if (opcion.key === 'evaluar') {
-      navigate('/evaluar-proyectos', { state: { tipoProyecto } });
-    } else if (opcion.key === 'informes') {
-      navigate('/informes', { state: { tipoProyecto } });
-    }
+  const tipoMap = {
+    'crear': tipoProyecto,
+    'evaluar': tipoProyecto,
+    'informes': tipoProyecto,
   };
+
+  console.log('Navegando con tipoProyecto:', tipoMap[opcion.key]);
+
+  if (opcion.key === 'crear') {
+    navigate('/crear-evaluacion', { state: { tipoProyecto } });
+  } else if (opcion.key === 'evaluar') {
+    navigate('/evaluar-proyectos', { state: { tipoProyecto } });
+  } else if (opcion.key === 'informes') {
+    navigate('/informes', { state: { tipoProyecto } });
+  }
+};
   return (
     <div style={s.page}>
       <style>{`
